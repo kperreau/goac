@@ -38,7 +38,7 @@ func (l *List) Affected() error {
 	for _, p := range l.Projects {
 		sem <- true // acquire
 		wg.Add(1)
-		processAffected(p, pOpts)
+		go processAffected(p, pOpts)
 	}
 
 	wg.Wait()

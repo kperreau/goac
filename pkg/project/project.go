@@ -2,6 +2,7 @@ package project
 
 import (
 	"fmt"
+	"golang.org/x/mod/modfile"
 	"os"
 	"path/filepath"
 	"strings"
@@ -42,7 +43,7 @@ type Options struct {
 	Path           string
 	Target         Target
 	DryRun         bool
-	MaxConcurrency int
+	MaxConcurrency int // TODO: make it configurable with cli cmd --concurrency=n
 }
 
 func NewProjectsList(opt *Options) (IList, error) {
@@ -101,6 +102,7 @@ func loadConfig(file string, hashPool *sync.Pool) (*Project, error) {
 
 type processProjectOptions struct {
 	*Options
+	gomod     *modfile.File
 	projectCh chan *Project
 	errorsCh  chan error
 	hashPool  *sync.Pool
@@ -110,6 +112,12 @@ type processProjectOptions struct {
 
 func getProjects(opt *Options) (projects []*Project, err error) {
 	projectsFiles, err := find(opt.Path, configFileName)
+	if err != nil {
+		return nil, err
+	}
+
+	// preload go mod file dependencies
+	gomod, err := loadGOModFIle()
 	if err != nil {
 		return nil, err
 	}
@@ -126,6 +134,7 @@ func getProjects(opt *Options) (projects []*Project, err error) {
 		hashPool:  hasher.NewPool(),
 		wg:        &wg,
 		sem:       sem,
+		gomod:     gomod,
 	}
 
 	for _, projectFile := range projectsFiles {
@@ -161,7 +170,7 @@ func processProject(opt *processProjectOptions, projectFile string) {
 	}
 
 	// load go modules with go list cmd cli (list imports and dependencies)
-	if err := project.LoadGOModules(); err != nil {
+	if err := project.LoadGOModules(opt.gomod); err != nil {
 		go func() { opt.errorsCh <- fmt.Errorf("error loading modules: %w", err) }()
 		return
 	}

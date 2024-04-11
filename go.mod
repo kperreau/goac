@@ -6,6 +6,7 @@ require (
 	github.com/codeskyblue/dockerignore v0.0.0-20151214070507-de82dee623d9
 	github.com/fatih/color v1.16.0
 	github.com/spf13/cobra v1.8.0
+	golang.org/x/mod v0.17.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 

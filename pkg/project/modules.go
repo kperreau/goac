@@ -2,6 +2,10 @@ package project
 
 import (
 	"encoding/json"
+	"fmt"
+	"golang.org/x/mod/modfile"
+	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"slices"
@@ -26,7 +30,7 @@ type toolData struct {
 	Deps           []string
 }
 
-func (p *Project) LoadGOModules() error {
+func (p *Project) LoadGOModules(gomod *modfile.File) error {
 	cmd := exec.Command("go", "list", "-json", p.GoPath)
 	output, err := cmd.Output()
 	if err != nil {
@@ -40,21 +44,27 @@ func (p *Project) LoadGOModules() error {
 
 	localDir, extDeps := cleanDeps(&rawData, p.GoPath)
 
-	cmd = exec.Command("go", append([]string{"list", "-f", "{{.ImportPath}}{{if not .Standard}} {{.Module.Version}}{{end}}"}, extDeps...)...)
-	output, err = cmd.Output()
-	if err != nil {
-		return err
-	}
-
-	externalDeps := strings.Fields(string(output))
-
 	p.Module = &Module{
 		LocalDirs:      localDir,
-		ExternalDeps:   externalDeps,
+		ExternalDeps:   getDependencies(gomod, extDeps),
 		IgnoredGoFiles: rawData.IgnoredGoFiles,
 	}
 
 	return nil
+}
+
+func loadGOModFIle() (*modfile.File, error) {
+	data, err := os.ReadFile("go.mod")
+	if err != nil {
+		log.Fatalf("error reading go.mod: %v", err)
+	}
+
+	modFile, err := modfile.Parse("go.mod", data, nil)
+	if err != nil {
+		log.Fatalf("error parsing go.mod: %v", err)
+	}
+
+	return modFile, nil
 }
 
 func cleanDeps(rawData *toolData, localDir string) (localDeps []string, extDeps []string) {
@@ -72,4 +82,23 @@ func cleanDeps(rawData *toolData, localDir string) (localDeps []string, extDeps 
 	}
 
 	return localDeps, extDeps
+}
+
+func getDependencies(gomod *modfile.File, rawDeps []string) (deps []string) {
+	slices.Sort(rawDeps)
+	for _, dep := range rawDeps {
+		if depWithVersion := findVersion(gomod.Require, dep); depWithVersion != "" {
+			deps = append(deps, depWithVersion)
+		}
+	}
+	return deps
+}
+
+func findVersion(slice []*modfile.Require, val string) string {
+	for _, item := range slice {
+		if strings.Contains(val, item.Mod.Path) {
+			return fmt.Sprintf("%s %s", val, item.Mod.Version)
+		}
+	}
+	return val
 }
