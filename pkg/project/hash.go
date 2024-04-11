@@ -52,16 +52,18 @@ func processDependenciesHash(p *Project) (string, error) {
 }
 
 func processDirectoryHash(p *Project) (string, error) {
-	files, err := scan.Dirs(p.Module.LocalDeps, p.Rule)
+	// TODO: make optional cli --debug to print local files match
+	//fmt.Println("NAME", p.Name)
+	//fmt.Println("")
+	//fmt.Println("local deps", p.Module.LocalDirs)
+	//fmt.Println("rule", p.Rule)
+	//fmt.Println(strings.Join(files, "\n"))
+	//fmt.Println("")
+
+	files, err := scan.Dirs(p.Module.LocalDirs, p.Rule)
 	if err != nil {
 		return "", err
 	}
-
-	// TODO: make optional cli --debug to print local files match
-	// fmt.Println("NAME", p.Name)
-	// fmt.Println("")
-	// fmt.Println(strings.Join(files, "\n"))
-	// fmt.Println("")
 
 	hashDir, err := hasher.Files(files, p.hashPool)
 	if err != nil {

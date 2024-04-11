@@ -3,12 +3,13 @@ package project
 import (
 	"encoding/json"
 	"os/exec"
+	"path/filepath"
 	"slices"
 	"strings"
 )
 
 type Module struct {
-	LocalDeps      []string
+	LocalDirs      []string
 	ExternalDeps   []string
 	IgnoredGoFiles []string
 }
@@ -37,7 +38,7 @@ func (p *Project) LoadGOModules() error {
 		return err
 	}
 
-	localDeps, extDeps := cleanDeps(&rawData)
+	localDir, extDeps := cleanDeps(&rawData, p.GoPath)
 
 	cmd = exec.Command("go", append([]string{"list", "-f", "{{.ImportPath}}{{if not .Standard}} {{.Module.Version}}{{end}}"}, extDeps...)...)
 	output, err = cmd.Output()
@@ -48,7 +49,7 @@ func (p *Project) LoadGOModules() error {
 	externalDeps := strings.Fields(string(output))
 
 	p.Module = &Module{
-		LocalDeps:      localDeps,
+		LocalDirs:      localDir,
 		ExternalDeps:   externalDeps,
 		IgnoredGoFiles: rawData.IgnoredGoFiles,
 	}
@@ -56,8 +57,8 @@ func (p *Project) LoadGOModules() error {
 	return nil
 }
 
-func cleanDeps(rawData *toolData) (localDeps []string, extDeps []string) {
-	localDeps = rawData.GoFiles
+func cleanDeps(rawData *toolData, localDir string) (localDeps []string, extDeps []string) {
+	localDeps = []string{filepath.Clean(localDir)}
 	deps := append(rawData.Deps, rawData.Imports...)
 	for _, dep := range deps {
 		if strings.Contains(dep, rawData.Module.Path) {
