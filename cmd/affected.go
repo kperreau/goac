@@ -18,11 +18,11 @@ var affectedCmd = &cobra.Command{
 			return err
 		}
 
-		switch target {
-		case project.TargetBuild.String():
+		t := project.StringToTarget(target)
+		if project.StringToTarget(target) != project.TargetNone {
 			projectsList, err := project.NewProjectsList(&project.Options{
 				Path:           ".",
-				Target:         project.TargetBuild,
+				Target:         t,
 				DryRun:         dryrun,
 				MaxConcurrency: concurrency,
 				BinaryCheck:    binaryCheck,
@@ -30,25 +30,7 @@ var affectedCmd = &cobra.Command{
 				DockerIgnore:   dockerignore,
 				Debug:          debugArgs,
 				ProjectsName:   projectsCmd(projects),
-			})
-			if err != nil {
-				return err
-			}
-			if err := projectsList.Affected(); err != nil {
-				return err
-			}
-			return nil
-		case project.TargetBuildImage.String():
-			projectsList, err := project.NewProjectsList(&project.Options{
-				Path:           ".",
-				Target:         project.TargetBuildImage,
-				DryRun:         dryrun,
-				MaxConcurrency: concurrency,
-				BinaryCheck:    binaryCheck,
-				Force:          force,
-				DockerIgnore:   dockerignore,
-				Debug:          debugArgs,
-				ProjectsName:   projectsCmd(projects),
+				PrintStdout:    stdout,
 			})
 			if err != nil {
 				return err
@@ -69,12 +51,14 @@ var (
 	force        bool
 	binaryCheck  bool
 	dockerignore bool
+	stdout       bool
 )
 
 func init() {
 	rootCmd.AddCommand(affectedCmd)
 
 	affectedCmd.Flags().StringVarP(&target, "target", "t", "", "Target")
+	affectedCmd.Flags().BoolVar(&stdout, "stdout", false, "Print stdout of exec command")
 	affectedCmd.Flags().BoolVar(&dockerignore, "dockerignore", true, "Read docker ignore")
 	affectedCmd.Flags().BoolVar(&binaryCheck, "binarycheck", false, "Affected if binary is missing")
 	affectedCmd.Flags().BoolVar(&dryrun, "dryrun", false, "Dry & run")

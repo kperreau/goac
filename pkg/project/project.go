@@ -61,6 +61,7 @@ type Options struct {
 	DockerIgnore   bool
 	ProjectsName   []string
 	Debug          []string
+	PrintStdout    bool
 }
 
 func NewProjectsList(opt *Options) (IList, error) {

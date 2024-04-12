@@ -96,3 +96,13 @@ func (p *Project) isAffected() bool {
 
 	return false
 }
+
+func StringToTarget(s string) Target {
+	switch s {
+	case TargetBuild.String():
+		return TargetBuild
+	case TargetBuildImage.String():
+		return TargetBuildImage
+	}
+	return TargetNone
+}
