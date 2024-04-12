@@ -20,7 +20,6 @@ const (
 func (t Target) String() string { return string(t) }
 
 type processAffectedOptions struct {
-	*Options
 	wg  *sync.WaitGroup
 	sem chan bool
 }
@@ -32,9 +31,8 @@ func (l *List) Affected() error {
 	sem := make(chan bool, l.Options.MaxConcurrency+1)
 	wg := sync.WaitGroup{}
 	pOpts := &processAffectedOptions{
-		Options: l.Options,
-		wg:      &wg,
-		sem:     sem,
+		wg:  &wg,
+		sem: sem,
 	}
 
 	for _, p := range l.Projects {
@@ -54,18 +52,18 @@ func processAffected(p *Project, opts *processAffectedOptions) {
 		<-opts.sem // release
 	}()
 
-	isAffected := p.isAffected(opts.Target)
+	isAffected := p.isAffected()
 
-	if isAffected && opts.DryRun {
+	if isAffected && p.CMDOptions.DryRun {
 		printer.Printf("%s %s %s\n", color.BlueString(p.Name), color.YellowString("=>"), p.Path)
 	}
 
-	if opts.Target == TargetBuild && !opts.DryRun && isAffected {
+	if p.CMDOptions.Target == TargetBuild && !p.CMDOptions.DryRun && isAffected {
 		if _, err := p.buildProject(); err != nil {
 			printer.Errorf("failed to build: %s\n", err.Error())
 			return
 		}
-		if err := p.writeCache(opts.Target); err != nil {
+		if err := p.writeCache(p.CMDOptions.Target); err != nil {
 			printer.Errorf("%v\n", err)
 			return
 		}
@@ -74,17 +72,25 @@ func processAffected(p *Project, opts *processAffectedOptions) {
 
 func (l *List) countAffected() (n int) {
 	for _, p := range l.Projects {
-		if p.isAffected(l.Options.Target) {
+		if p.isAffected() {
 			n++
 		}
 	}
 	return n
 }
 
-func (p *Project) isAffected(target Target) bool {
-	// TODO: make FileExist optional w/ cmd cli --CheckBinary
-	if p.Cache.Targets[target] == nil || !p.Cache.Targets[target].isMetadataMatch(p.Metadata) || !utils.FileExist(path.Join(p.Path, p.Name)) {
+func (p *Project) isAffected() bool {
+	if p.CMDOptions.Force {
 		return true
 	}
+
+	if p.Cache.Targets[p.CMDOptions.Target] == nil || !p.Cache.Targets[p.CMDOptions.Target].isMetadataMatch(p.Metadata) {
+		return true
+	}
+
+	if p.CMDOptions.BinaryCheck && !utils.FileExist(path.Join(p.Path, p.Name)) {
+		return true
+	}
+
 	return false
 }

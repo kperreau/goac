@@ -1,7 +1,10 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
+	"slices"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -17,6 +20,7 @@ This way it improve build and deployment.`,
 
 var (
 	concurrency int
+	debug       string
 )
 
 func Execute() {
@@ -27,5 +31,22 @@ func Execute() {
 }
 
 func init() {
+	affectedCmd.Flags().StringVar(&debug, "debug", "", "Debug files loaded/hashed")
 	rootCmd.PersistentFlags().IntVarP(&concurrency, "concurrency", "c", 4, "Max Concurrency")
+}
+
+var validDebugValues = []string{"name", "includes", "excludes", "dependencies", "local", "hashed"}
+
+func debugCommand(arg string) ([]string, error) {
+	if arg == "" {
+		return []string{}, nil
+	}
+	args := strings.Split(arg, ",")
+	for _, elem := range args {
+		if !slices.Contains(validDebugValues, elem) {
+			return []string{}, fmt.Errorf("bad debug value: %s\nvalid values are: %s\n", elem, strings.Join(validDebugValues, ","))
+		}
+	}
+
+	return args, nil
 }

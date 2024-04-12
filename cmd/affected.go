@@ -14,6 +14,10 @@ var affectedCmd = &cobra.Command{
 	Long:    `List projects affected by recent changes based on GOAC cache.`,
 	Example: "goac affected -t build -d",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		debugArgs, err := debugCommand(debug)
+		if err != nil {
+			return err
+		}
 
 		switch target {
 		case project.TargetBuild.String():
@@ -22,6 +26,10 @@ var affectedCmd = &cobra.Command{
 				Target:         project.TargetBuild,
 				DryRun:         dryrun,
 				MaxConcurrency: concurrency,
+				BinaryCheck:    binaryCheck,
+				Force:          force,
+				DockerIgnore:   dockerignore,
+				Debug:          debugArgs,
 			})
 			if err != nil {
 				return err
@@ -33,9 +41,13 @@ var affectedCmd = &cobra.Command{
 		case project.TargetBuildImage.String():
 			projectsList, err := project.NewProjectsList(&project.Options{
 				Path:           ".",
-				Target:         project.TargetBuild,
+				Target:         project.TargetBuildImage,
 				DryRun:         dryrun,
 				MaxConcurrency: concurrency,
+				BinaryCheck:    binaryCheck,
+				Force:          force,
+				DockerIgnore:   dockerignore,
+				Debug:          debugArgs,
 			})
 			if err != nil {
 				return err
@@ -51,19 +63,19 @@ var affectedCmd = &cobra.Command{
 }
 
 var (
-	build  bool
-	image  bool
-	target string
-	dryrun bool
-	//concurrency int
+	target       string
+	dryrun       bool
+	force        bool
+	binaryCheck  bool
+	dockerignore bool
 )
 
 func init() {
 	rootCmd.AddCommand(affectedCmd)
 
-	affectedCmd.Flags().BoolVarP(&image, "image", "i", false, "Build Image")
-	affectedCmd.Flags().BoolVarP(&build, "build", "b", false, "Build binary")
-	affectedCmd.Flags().BoolVarP(&dryrun, "DryRun", "d", false, "Dry & run")
-	//affectedCmd.Flags().IntVarP(&concurrency, "concurrency", "c", 4, "Max Concurrency")
 	affectedCmd.Flags().StringVarP(&target, "target", "t", "", "Target")
+	affectedCmd.Flags().BoolVar(&dockerignore, "dockerignore", true, "Read docker ignore")
+	affectedCmd.Flags().BoolVar(&binaryCheck, "binarycheck", false, "Affected if binary is missing")
+	affectedCmd.Flags().BoolVar(&dryrun, "dryrun", false, "Dry & run")
+	affectedCmd.Flags().BoolVarP(&force, "force", "f", false, "Force build")
 }

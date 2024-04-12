@@ -18,10 +18,19 @@ var listCmd = &cobra.Command{
 		if len(args) > 1 {
 			return errors.New("bad args number")
 		}
+
+		debugArgs, err := debugCommand(debug)
+		if err != nil {
+			return err
+		}
+
 		listProject, err := project.NewProjectsList(&project.Options{
 			Path:           ".",
 			Target:         project.TargetNone,
 			MaxConcurrency: concurrency,
+			BinaryCheck:    binaryCheck,
+			DockerIgnore:   dockerignore,
+			Debug:          debugArgs,
 		})
 		if err != nil {
 			return err

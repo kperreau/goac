@@ -17,16 +17,17 @@ import (
 )
 
 type Project struct {
-	Version  string
-	Name     string
-	Path     string
-	GoPath   string
-	HashPath string
-	Module   *Module
-	hashPool *sync.Pool
-	Metadata *Metadata
-	Cache    *Cache
-	Rule     *scan.Rule
+	Version    string
+	Name       string
+	Path       string
+	GoPath     string
+	HashPath   string
+	Module     *Module
+	HashPool   *sync.Pool
+	Metadata   *Metadata
+	Cache      *Cache
+	Rule       *scan.Rule
+	CMDOptions *Options
 }
 
 type IList interface {
@@ -44,6 +45,10 @@ type Options struct {
 	Target         Target
 	DryRun         bool
 	MaxConcurrency int
+	BinaryCheck    bool
+	Force          bool
+	DockerIgnore   bool
+	Debug          []string
 }
 
 func NewProjectsList(opt *Options) (IList, error) {
@@ -76,7 +81,7 @@ func find(path string, projectFileName string) (files []string, err error) {
 	return files, nil
 }
 
-func loadConfig(file string, hashPool *sync.Pool) (*Project, error) {
+func loadConfig(file string, opts *processProjectOptions) (*Project, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
 		return nil, fmt.Errorf("error opening project config: %w", err)
@@ -89,9 +94,10 @@ func loadConfig(file string, hashPool *sync.Pool) (*Project, error) {
 	}
 	project.Path = utils.CleanPath(file, configFileName)
 	project.GoPath = utils.AddCurrentDirPrefix(project.Path)
-	project.hashPool = hashPool
+	project.HashPool = opts.hashPool
+	project.CMDOptions = opts.Options
 
-	hashPath, err := hasher.WithPool(hashPool, project.Path)
+	hashPath, err := hasher.WithPool(opts.hashPool, project.Path)
 	if err != nil {
 		return nil, fmt.Errorf("error hashing files: %w", err)
 	}
@@ -163,7 +169,7 @@ func processProject(opt *processProjectOptions, projectFile string) {
 	}()
 
 	// load config file .goacproject.yaml
-	project, err := loadConfig(projectFile, opt.hashPool)
+	project, err := loadConfig(projectFile, opt)
 	if err != nil {
 		go func() { opt.errorsCh <- fmt.Errorf("error loading config: %w", err) }()
 		return
@@ -187,9 +193,10 @@ func processProject(opt *processProjectOptions, projectFile string) {
 		return
 	}
 
-	// TODO: make it optional w/ cmd cli --Dockerignore
-	// load includes/excludes rule
-	project.LoadRule(opt.Target)
+	if opt.DockerIgnore {
+		// load includes/excludes rule
+		project.LoadRule(opt.Target)
+	}
 
 	// load hashs
 	if err := project.LoadHashs(); err != nil {
