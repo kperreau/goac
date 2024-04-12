@@ -9,8 +9,8 @@ import (
 )
 
 type Cache struct {
-	Targets map[Target]*Metadata
-	Path    string
+	Target map[Target]*Metadata
+	Path   string
 }
 
 const CachePath = ".goac/cache/"
@@ -19,7 +19,7 @@ func (p *Project) LoadCache() error {
 	cacheFilePath := fmt.Sprintf("%s%s.yaml", CachePath, p.HashPath)
 
 	// init a default basic cache
-	cacheData := Cache{Path: p.Path, Targets: map[Target]*Metadata{}}
+	cacheData := Cache{Path: p.Path, Target: map[Target]*Metadata{}}
 
 	if _, err := os.Stat(cacheFilePath); os.IsNotExist(err) {
 		p.Cache = &cacheData
@@ -53,14 +53,14 @@ func (cm *Metadata) isMetadataMatch(m *Metadata) bool {
 		cm.DirHash == m.DirHash
 }
 
-func (p *Project) writeCache(target Target) error {
+func (p *Project) writeCache() error {
 	cacheFilePath := fmt.Sprintf(CachePath+"%s.yaml", p.HashPath)
 
 	if err := os.MkdirAll(CachePath, 0o755); err != nil {
 		return fmt.Errorf("error creating cache directory: %v", err)
 	}
 
-	p.Cache.Targets[target] = &Metadata{
+	p.Cache.Target[p.CMDOptions.Target] = &Metadata{
 		DependenciesHash: p.Metadata.DependenciesHash,
 		DirHash:          p.Metadata.DirHash,
 		Date:             time.Now().Format(time.RFC3339),

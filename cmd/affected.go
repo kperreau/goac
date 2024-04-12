@@ -11,7 +11,7 @@ var affectedCmd = &cobra.Command{
 	Use:     "affected",
 	Short:   "List affected projects",
 	Long:    `List projects affected by recent changes based on GOAC cache.`,
-	Example: "goac affected -t build -d",
+	Example: "goac affected -t build",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		debugArgs, err := debugCmd(debug)
 		if err != nil {

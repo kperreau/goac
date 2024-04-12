@@ -1,2 +1,17 @@
 version: 1.0
 name: goac
+target:
+  build:
+    exec:
+      cmd: go
+      params:
+        - build
+        - -ldflags=-s -w
+        - -o
+  build-image:
+    exec:
+      cmd: go
+      params:
+        - build
+        - -ldflags=-s -w
+        - -o

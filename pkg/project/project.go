@@ -17,10 +17,20 @@ import (
 	"github.com/kperreau/goac/pkg/printer"
 )
 
+type Exec struct {
+	CMD    string
+	Params []string
+}
+
+type TargetConfig struct {
+	Exec *Exec
+}
+
 type Project struct {
 	Version    string
 	Name       string
 	Path       string
+	Target     map[Target]*TargetConfig
 	GoPath     string
 	HashPath   string
 	Module     *Module

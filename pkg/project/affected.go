@@ -1,12 +1,11 @@
 package project
 
 import (
-	"path"
-	"sync"
-
 	"github.com/fatih/color"
 	"github.com/kperreau/goac/pkg/printer"
 	"github.com/kperreau/goac/pkg/utils"
+	"path"
+	"sync"
 )
 
 type Target string
@@ -58,15 +57,18 @@ func processAffected(p *Project, opts *processAffectedOptions) {
 		printer.Printf("%s %s %s\n", color.BlueString(p.Name), color.YellowString("=>"), p.Path)
 	}
 
-	if p.CMDOptions.Target == TargetBuild && !p.CMDOptions.DryRun && isAffected {
-		if _, err := p.buildProject(); err != nil {
-			printer.Errorf("failed to build: %s\n", err.Error())
-			return
-		}
-		if err := p.writeCache(p.CMDOptions.Target); err != nil {
-			printer.Errorf("%v\n", err)
-			return
-		}
+	if p.CMDOptions.DryRun || !isAffected {
+		return
+	}
+
+	if _, err := p.build(); err != nil {
+		printer.Errorf("error building: %s\n", err.Error())
+		return
+	}
+
+	if err := p.writeCache(); err != nil {
+		printer.Errorf("%v\n", err)
+		return
 	}
 }
 
@@ -84,7 +86,7 @@ func (p *Project) isAffected() bool {
 		return true
 	}
 
-	if p.Cache.Targets[p.CMDOptions.Target] == nil || !p.Cache.Targets[p.CMDOptions.Target].isMetadataMatch(p.Metadata) {
+	if p.Cache.Target[p.CMDOptions.Target] == nil || !p.Cache.Target[p.CMDOptions.Target].isMetadataMatch(p.Metadata) {
 		return true
 	}
 
