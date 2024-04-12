@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"errors"
-
 	"github.com/kperreau/goac/pkg/project"
 
 	"github.com/spf13/cobra"
@@ -19,7 +18,7 @@ var listCmd = &cobra.Command{
 			return errors.New("bad args number")
 		}
 
-		debugArgs, err := debugCommand(debug)
+		debugArgs, err := debugCmd(debug)
 		if err != nil {
 			return err
 		}
@@ -31,6 +30,7 @@ var listCmd = &cobra.Command{
 			BinaryCheck:    binaryCheck,
 			DockerIgnore:   dockerignore,
 			Debug:          debugArgs,
+			ProjectsName:   projectsCmd(projects),
 		})
 		if err != nil {
 			return err

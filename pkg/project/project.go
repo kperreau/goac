@@ -5,6 +5,7 @@ import (
 	"golang.org/x/mod/modfile"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 
@@ -48,6 +49,7 @@ type Options struct {
 	BinaryCheck    bool
 	Force          bool
 	DockerIgnore   bool
+	ProjectsName   []string
 	Debug          []string
 }
 
@@ -153,7 +155,9 @@ func getProjects(opt *Options) (projects []*Project, err error) {
 	for i := 0; i < len(projectsFiles); i++ {
 		select {
 		case project := <-projectsCh:
-			projects = append(projects, project)
+			if project != nil {
+				projects = append(projects, project)
+			}
 		case err := <-errorsCh:
 			return nil, err
 		}
@@ -172,6 +176,12 @@ func processProject(opt *processProjectOptions, projectFile string) {
 	project, err := loadConfig(projectFile, opt)
 	if err != nil {
 		go func() { opt.errorsCh <- fmt.Errorf("error loading config: %w", err) }()
+		return
+	}
+
+	// Skip if option cli cmd --projects is set and not match this project name
+	if len(opt.Options.ProjectsName) > 0 && !slices.Contains(opt.Options.ProjectsName, project.Name) {
+		go func() { opt.projectCh <- nil }()
 		return
 	}
 

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"errors"
-
 	"github.com/kperreau/goac/pkg/project"
 	"github.com/spf13/cobra"
 )
@@ -14,7 +13,7 @@ var affectedCmd = &cobra.Command{
 	Long:    `List projects affected by recent changes based on GOAC cache.`,
 	Example: "goac affected -t build -d",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		debugArgs, err := debugCommand(debug)
+		debugArgs, err := debugCmd(debug)
 		if err != nil {
 			return err
 		}
@@ -30,6 +29,7 @@ var affectedCmd = &cobra.Command{
 				Force:          force,
 				DockerIgnore:   dockerignore,
 				Debug:          debugArgs,
+				ProjectsName:   projectsCmd(projects),
 			})
 			if err != nil {
 				return err
@@ -48,6 +48,7 @@ var affectedCmd = &cobra.Command{
 				Force:          force,
 				DockerIgnore:   dockerignore,
 				Debug:          debugArgs,
+				ProjectsName:   projectsCmd(projects),
 			})
 			if err != nil {
 				return err

@@ -21,6 +21,7 @@ This way it improve build and deployment.`,
 var (
 	concurrency int
 	debug       string
+	projects    string
 )
 
 func Execute() {
@@ -31,13 +32,14 @@ func Execute() {
 }
 
 func init() {
-	affectedCmd.Flags().StringVar(&debug, "debug", "", "Debug files loaded/hashed")
+	rootCmd.PersistentFlags().StringVarP(&projects, "projects", "p", "", "Filter by projects name")
+	rootCmd.PersistentFlags().StringVar(&debug, "debug", "", "Debug files loaded/hashed")
 	rootCmd.PersistentFlags().IntVarP(&concurrency, "concurrency", "c", 4, "Max Concurrency")
 }
 
 var validDebugValues = []string{"name", "includes", "excludes", "dependencies", "local", "hashed"}
 
-func debugCommand(arg string) ([]string, error) {
+func debugCmd(arg string) ([]string, error) {
 	if arg == "" {
 		return []string{}, nil
 	}
@@ -49,4 +51,11 @@ func debugCommand(arg string) ([]string, error) {
 	}
 
 	return args, nil
+}
+
+func projectsCmd(arg string) []string {
+	if arg == "" {
+		return []string{}
+	}
+	return strings.Split(arg, ",")
 }
