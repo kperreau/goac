@@ -14,21 +14,14 @@ var affectedCmd = &cobra.Command{
 	Long:    `List projects affected by recent changes based on GOAC cache.`,
 	Example: "goac affected -t build -d",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		target, err := cmd.Flags().GetString("target")
-		if err != nil {
-			return err
-		}
-		dryRun, err := cmd.Flags().GetBool("DryRun")
-		if err != nil {
-			return err
-		}
 
-		if target == "build" {
+		switch target {
+		case project.TargetBuild.String():
 			projectsList, err := project.NewProjectsList(&project.Options{
 				Path:           ".",
 				Target:         project.TargetBuild,
-				DryRun:         dryRun,
-				MaxConcurrency: 4,
+				DryRun:         dryrun,
+				MaxConcurrency: concurrency,
 			})
 			if err != nil {
 				return err
@@ -36,7 +29,20 @@ var affectedCmd = &cobra.Command{
 			if err := projectsList.Affected(); err != nil {
 				return err
 			}
-
+			return nil
+		case project.TargetBuildImage.String():
+			projectsList, err := project.NewProjectsList(&project.Options{
+				Path:           ".",
+				Target:         project.TargetBuild,
+				DryRun:         dryrun,
+				MaxConcurrency: concurrency,
+			})
+			if err != nil {
+				return err
+			}
+			if err := projectsList.Affected(); err != nil {
+				return err
+			}
 			return nil
 		}
 
@@ -44,9 +50,20 @@ var affectedCmd = &cobra.Command{
 	},
 }
 
+var (
+	build  bool
+	image  bool
+	target string
+	dryrun bool
+	//concurrency int
+)
+
 func init() {
 	rootCmd.AddCommand(affectedCmd)
 
-	affectedCmd.Flags().BoolP("DryRun", "d", false, "DryRun")
-	affectedCmd.Flags().StringP("target", "t", "", "Targets")
+	affectedCmd.Flags().BoolVarP(&image, "image", "i", false, "Build Image")
+	affectedCmd.Flags().BoolVarP(&build, "build", "b", false, "Build binary")
+	affectedCmd.Flags().BoolVarP(&dryrun, "DryRun", "d", false, "Dry & run")
+	//affectedCmd.Flags().IntVarP(&concurrency, "concurrency", "c", 4, "Max Concurrency")
+	affectedCmd.Flags().StringVarP(&target, "target", "t", "", "Target")
 }

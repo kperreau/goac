@@ -17,6 +17,8 @@ const (
 	TargetBuildImage Target = "build-image"
 )
 
+func (t Target) String() string { return string(t) }
+
 type processAffectedOptions struct {
 	*Options
 	wg  *sync.WaitGroup

@@ -43,7 +43,7 @@ type Options struct {
 	Path           string
 	Target         Target
 	DryRun         bool
-	MaxConcurrency int // TODO: make it configurable with cli cmd --concurrency=n
+	MaxConcurrency int
 }
 
 func NewProjectsList(opt *Options) (IList, error) {
