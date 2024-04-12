@@ -24,6 +24,8 @@ var (
 	projects    string
 )
 
+var validDebugValues = []string{"name", "includes", "excludes", "dependencies", "local", "hashed"}
+
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -36,8 +38,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&debug, "debug", "", "Debug files loaded/hashed")
 	rootCmd.PersistentFlags().IntVarP(&concurrency, "concurrency", "c", 4, "Max Concurrency")
 }
-
-var validDebugValues = []string{"name", "includes", "excludes", "dependencies", "local", "hashed"}
 
 func debugCmd(arg string) ([]string, error) {
 	if arg == "" {
