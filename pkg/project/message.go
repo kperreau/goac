@@ -13,7 +13,3 @@ func (l *List) printAffected() {
 	}
 	printer.Printf("Affected: %s/%s\n", affected, color.HiBlueString("%d", len(l.Projects)))
 }
-
-func MessageName(n string) string {
-	return color.HiBlueString("%s", n)
-}

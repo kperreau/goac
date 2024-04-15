@@ -33,7 +33,7 @@ func FileExist(filePath string) bool {
 // This avoids duplication.
 func AppendIfNotExist(slice []string, elems ...string) []string {
 	for _, elem := range elems {
-		if !slices.Contains(slice, elem) {
+		if elem != "" && !slices.Contains(slice, elem) {
 			slice = append(slice, elem)
 		}
 	}

@@ -1,7 +1,6 @@
 package scan
 
 import (
-	"github.com/kperreau/goac/pkg/printer"
 	"os"
 	"path/filepath"
 )
@@ -27,8 +26,7 @@ func subDir(dir string, rule *Rule) (files []string, err error) {
 	dir = filepath.Clean(dir)
 	err = filepath.Walk(dir, func(file string, info os.FileInfo, err error) error {
 		if err != nil {
-			printer.Errorf("error: %v\n", err)
-			return filepath.SkipDir
+			return err
 		}
 
 		if info.IsDir() {

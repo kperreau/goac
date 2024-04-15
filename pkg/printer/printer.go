@@ -6,10 +6,6 @@ import (
 	"github.com/fatih/color"
 )
 
-func Sprintf(format string, a ...any) string {
-	return fmt.Sprintf(format, a...)
-}
-
 func Printf(format string, a ...any) {
 	fmt.Printf(format, a...)
 }
