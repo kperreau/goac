@@ -2,12 +2,13 @@ package project
 
 import (
 	"fmt"
-	"golang.org/x/mod/modfile"
 	"os"
 	"path/filepath"
 	"slices"
 	"strings"
 	"sync"
+
+	"golang.org/x/mod/modfile"
 
 	"github.com/kperreau/goac/pkg/hasher"
 	"github.com/kperreau/goac/pkg/scan"
@@ -136,7 +137,7 @@ func getProjects(opt *Options) (projects []*Project, err error) {
 	}
 
 	// preload go mod file dependencies
-	gomod, err := loadGOModFIle()
+	gomod, err := loadGOModFile(".")
 	if err != nil {
 		return nil, err
 	}

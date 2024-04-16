@@ -2,10 +2,12 @@ package project
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
 	"io"
+	"log"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPrintAffected_1AffectedAnd1Project(t *testing.T) {
@@ -74,12 +76,16 @@ func redirectStdoutMessage(f func()) bytes.Buffer {
 	f()
 
 	// Restore stdout
-	w.Close()
+	if err := w.Close(); err != nil {
+		log.Fatal(err)
+	}
 	os.Stdout = old
 
 	// Read from the buffer and assert the output
 	var buf bytes.Buffer
-	io.Copy(&buf, r)
+	if _, err := io.Copy(&buf, r); err != nil {
+		log.Fatal(err)
+	}
 
 	return buf
 }

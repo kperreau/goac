@@ -16,3 +16,9 @@ vet:
 
 lint:
 	@golangci-lint run
+
+test-ci:
+	@go test -race -vet=off ./...
+
+format:
+	@gofumpt -l .

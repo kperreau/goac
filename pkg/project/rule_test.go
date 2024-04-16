@@ -1,8 +1,9 @@
 package project
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLoadRule_LoadsDefaultRule(t *testing.T) {

@@ -2,10 +2,11 @@ package hasher
 
 import (
 	"crypto/sha1"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFiles_HashOfAllFilesContentsInAlphabeticalOrder(t *testing.T) {

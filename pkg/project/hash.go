@@ -2,11 +2,12 @@ package project
 
 import (
 	"encoding/hex"
-	"github.com/fatih/color"
-	"github.com/kperreau/goac/pkg/printer"
 	"hash"
 	"slices"
 	"strings"
+
+	"github.com/fatih/color"
+	"github.com/kperreau/goac/pkg/printer"
 
 	"github.com/kperreau/goac/pkg/hasher"
 	"github.com/kperreau/goac/pkg/scan"
@@ -96,5 +97,8 @@ func debug(p *Project, files []string) {
 	if slices.Contains(p.CMDOptions.Debug, "local") {
 		printer.Printf("%s\n%s\n", color.YellowString("Local Imports"), strings.Join(p.Module.LocalDirs, "\n"))
 	}
-	printer.Printf("\n")
+
+	if len(p.CMDOptions.Debug) > 0 {
+		printer.Printf("\n")
+	}
 }

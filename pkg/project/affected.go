@@ -1,11 +1,12 @@
 package project
 
 import (
+	"path"
+	"sync"
+
 	"github.com/fatih/color"
 	"github.com/kperreau/goac/pkg/printer"
 	"github.com/kperreau/goac/pkg/utils"
-	"path"
-	"sync"
 )
 
 type Target string
@@ -61,7 +62,7 @@ func processAffected(p *Project, opts *processAffectedOptions) {
 		return
 	}
 
-	if _, err := p.build(); err != nil {
+	if err := p.build(); err != nil {
 		printer.Errorf("error building: %s\n", err.Error())
 		return
 	}

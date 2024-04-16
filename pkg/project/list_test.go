@@ -2,10 +2,12 @@ package project
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
 	"io"
+	"log"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestList_PrintsNumberOfProjects(t *testing.T) {
@@ -39,7 +41,7 @@ func TestList_HandlesEmptyProjectsList(t *testing.T) {
 	buf := redirectStdout(l.List)
 
 	// Assert that the output is empty
-	assert.Equal(t, buf.String(), "Found 0 projects\n")
+	assert.Equal(t, "Found 0 projects\n", buf.String())
 }
 
 func TestList_HandlesProjectsWithEmptyName(t *testing.T) {
@@ -69,12 +71,16 @@ func redirectStdout(f func()) bytes.Buffer {
 	f()
 
 	// Restore stdout
-	w.Close()
+	if err := w.Close(); err != nil {
+		log.Fatal(err)
+	}
 	os.Stdout = old
 
 	// Read from the buffer and assert the output
 	var buf bytes.Buffer
-	io.Copy(&buf, r)
+	if _, err := io.Copy(&buf, r); err != nil {
+		log.Fatal(err)
+	}
 
 	return buf
 }

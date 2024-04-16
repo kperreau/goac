@@ -1,0 +1,49 @@
+name: Main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - "**"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache: false
+          check-latest: true
+
+      - name: Verify dependencies
+        run: |
+          go mod verify
+          git diff --exit-code
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: "v1.55.2"
+          args: --timeout=10m
+
+      - name: Vet
+        run: make vet
+
+      - name: Test Format
+        run: |
+          go install mvdan.cc/gofumpt@latest
+          make format
+
+      - name: Unit Test
+        run: make ci-test

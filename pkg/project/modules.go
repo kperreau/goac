@@ -3,13 +3,13 @@ package project
 import (
 	"encoding/json"
 	"fmt"
-	"golang.org/x/mod/modfile"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"slices"
 	"strings"
+
+	"golang.org/x/mod/modfile"
 )
 
 type Module struct {
@@ -53,15 +53,15 @@ func (p *Project) LoadGOModules(gomod *modfile.File) error {
 	return nil
 }
 
-func loadGOModFIle() (*modfile.File, error) {
-	data, err := os.ReadFile("go.mod")
+func loadGOModFile(path string) (*modfile.File, error) {
+	data, err := os.ReadFile(filepath.Join(path, "go.mod"))
 	if err != nil {
-		log.Fatalf("error reading go.mod: %v", err)
+		return nil, fmt.Errorf("error reading go.mod: %v", err)
 	}
 
 	modFile, err := modfile.Parse("go.mod", data, nil)
 	if err != nil {
-		log.Fatalf("error parsing go.mod: %v", err)
+		return nil, fmt.Errorf("error parsing go.mod: %v", err)
 	}
 
 	return modFile, nil
@@ -94,8 +94,8 @@ func getDependencies(gomod *modfile.File, rawDeps []string) (deps []string) {
 	return deps
 }
 
-func findVersion(slice []*modfile.Require, val string) string {
-	for _, item := range slice {
+func findVersion(dependencies []*modfile.Require, val string) string {
+	for _, item := range dependencies {
 		if strings.Contains(val, item.Mod.Path) {
 			return fmt.Sprintf("%s %s", val, item.Mod.Version)
 		}
