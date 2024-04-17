@@ -19,6 +19,43 @@ Follow these steps to install GOAC in your environment. Adjust as necessary for 
 go install github.com/kperreau/goac 
 ```
 
+## Configuration
+Configuring GOAC is straightforward. You need to create a `.goacproject.yaml` file and place it at the root of each project/directory that requires a build.
+
+### File example:
+```yaml
+# .goacproject.yaml
+
+version: 1.0       # Please do not change this, keep it at 1.0
+name: goac         # The name of your project/service/application
+target:            # Currently, GOAC supports two targets: build, build-image
+  build:           # Create the Go binary
+    exec:
+      cmd: go      # The command to execute for compilation, 'go' in this case
+      params:      # Parameters to add, the path and filename are automatically appended, the final command here will be: go build -ldflags="-s -w" -o . goac
+        - build
+        - -ldflags=-s -w
+        - -o
+  build-image:
+    exec:
+      cmd: docker
+      params:
+        - buildx
+        - build
+        - --platform=linux/amd64,linux/arm64
+        - --network
+        - host
+```
+
+### Environnement
+You can pass environment variables when executing GOAC, which will naturally be transmitted to the commands.
+However, two environment variables are reserved, initialized, and transmitted by GOAC:
+```
+BUILD_NAME={{project-name}}
+PROJECT_PATH={{project-path}}
+```
+If you run a shell script, you can use these 2 environment variables.
+
 ## Usage
 GOAC offers commands such as affected and list to manage your monorepo effectively.
 
