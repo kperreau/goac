@@ -3,6 +3,7 @@ package project
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -13,10 +14,10 @@ type Cache struct {
 	Path   string
 }
 
-const CachePath = ".goac/cache/"
+var DefaultCachePath = ".goac/cache/"
 
 func (p *Project) LoadCache() error {
-	cacheFilePath := fmt.Sprintf("%s%s.yaml", CachePath, p.HashPath)
+	cacheFilePath := fmt.Sprintf("%s%s.yaml", DefaultCachePath, p.HashPath)
 
 	// init a default basic cache
 	cacheData := Cache{Path: p.Path, Target: map[Target]*Metadata{}}
@@ -54,9 +55,9 @@ func (cm *Metadata) isMetadataMatch(m *Metadata) bool {
 }
 
 func (p *Project) writeCache() error {
-	cacheFilePath := fmt.Sprintf(CachePath+"%s.yaml", p.HashPath)
+	cacheFilePath := filepath.Join(DefaultCachePath, fmt.Sprintf("%s.yaml", p.HashPath))
 
-	if err := os.MkdirAll(CachePath, 0o755); err != nil {
+	if err := os.MkdirAll(DefaultCachePath, 0o755); err != nil {
 		return fmt.Errorf("error creating cache directory: %v", err)
 	}
 

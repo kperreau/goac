@@ -7,9 +7,8 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/kperreau/goac/pkg/printer"
-
 	"github.com/kperreau/goac/pkg/hasher"
+	"github.com/kperreau/goac/pkg/printer"
 	"github.com/kperreau/goac/pkg/scan"
 )
 
