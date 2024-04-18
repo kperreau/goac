@@ -20,7 +20,7 @@ func (p *Project) LoadCache() error {
 	cacheFilePath := fmt.Sprintf("%s%s.yaml", DefaultCachePath, p.HashPath)
 
 	// init a default basic cache
-	cacheData := Cache{Path: p.Path, Target: map[Target]*Metadata{}}
+	cacheData := Cache{Path: p.CleanPath, Target: map[Target]*Metadata{}}
 
 	if _, err := os.Stat(cacheFilePath); os.IsNotExist(err) {
 		p.Cache = &cacheData

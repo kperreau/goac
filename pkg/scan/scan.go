@@ -29,6 +29,15 @@ func subDir(dir string, rule *Rule) (files []string, err error) {
 			return err
 		}
 
+		// Skip if we match excludes patterns
+		if fileMatch(info.Name(), rule.Excludes) {
+			//fmt.Println("dir1", info.IsDir(), info.Name())
+			if info.IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+
 		if info.IsDir() {
 			return nil
 		} else if file == dir {
@@ -36,10 +45,11 @@ func subDir(dir string, rule *Rule) (files []string, err error) {
 			return filepath.SkipDir
 		}
 
-		// Skip if
-		// we have includes patterns, and we don't match it
-		// we match excludes patterns
-		if (len(rule.Includes) > 0 && !fileMatch(info.Name(), rule.Includes)) || fileMatch(info.Name(), rule.Excludes) {
+		// Skip if we have includes patterns, and we don't match it
+		if len(rule.Includes) > 0 && !fileMatch(info.Name(), rule.Includes) {
+			if info.IsDir() {
+				return filepath.SkipDir
+			}
 			return nil
 		}
 

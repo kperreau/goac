@@ -18,12 +18,18 @@ import (
 	"github.com/kperreau/goac/pkg/printer"
 )
 
+type Env struct {
+	Key   string
+	Value string
+}
+
 type Exec struct {
 	CMD    string
 	Params []string
 }
 
 type TargetConfig struct {
+	Envs []Env
 	Exec *Exec
 }
 
@@ -31,8 +37,8 @@ type Project struct {
 	Version    string
 	Name       string
 	Path       string
+	CleanPath  string
 	Target     map[Target]*TargetConfig
-	GoPath     string
 	HashPath   string
 	Module     *Module
 	HashPool   *sync.Pool
@@ -53,7 +59,6 @@ type List struct {
 }
 
 type Options struct {
-	Path           string
 	Target         Target
 	DryRun         bool
 	MaxConcurrency int
@@ -106,12 +111,12 @@ func loadConfig(file string, opts *processProjectOptions) (*Project, error) {
 		printer.Errorf("failed to unmarshal project config: %s", err.Error())
 		return nil, err
 	}
-	project.Path = utils.CleanPath(file, configFileName)
-	project.GoPath = utils.AddCurrentDirPrefix(project.Path)
+	project.CleanPath = utils.CleanPath(file, configFileName)
+	project.Path = utils.AddCurrentDirPrefix(project.CleanPath)
 	project.HashPool = opts.hashPool
 	project.CMDOptions = opts.Options
 
-	hashPath, err := hasher.WithPool(opts.hashPool, project.Path)
+	hashPath, err := hasher.WithPool(opts.hashPool, project.CleanPath)
 	if err != nil {
 		return nil, fmt.Errorf("error hashing files: %w", err)
 	}
@@ -131,7 +136,7 @@ type processProjectOptions struct {
 }
 
 func getProjects(opt *Options) (projects []*Project, err error) {
-	projectsFiles, err := find(opt.Path, configFileName)
+	projectsFiles, err := find(".", configFileName)
 	if err != nil {
 		return nil, err
 	}

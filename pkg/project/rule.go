@@ -26,7 +26,7 @@ func (p *Project) LoadRule(target Target) {
 	}
 
 	// add .dockerignore entries to the exclude files rules
-	dockerIgnoreFiles, err := dockerignore.ReadIgnoreFile(filepath.Clean(fmt.Sprintf("%s/.dockerignore", p.Path)))
+	dockerIgnoreFiles, err := dockerignore.ReadIgnoreFile(filepath.Clean(fmt.Sprintf("%s/.dockerignore", p.CleanPath)))
 	if err == nil {
 		p.Rule.Excludes = utils.AppendIfNotExist(p.Rule.Excludes, dockerIgnoreFiles...)
 	}

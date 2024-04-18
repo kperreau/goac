@@ -22,7 +22,6 @@ var affectedCmd = &cobra.Command{
 		t := project.StringToTarget(target)
 		if project.StringToTarget(target) != project.TargetNone {
 			projectsList, err := project.NewProjectsList(&project.Options{
-				Path:           ".",
 				Target:         t,
 				DryRun:         dryrun,
 				MaxConcurrency: concurrency,

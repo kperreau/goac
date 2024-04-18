@@ -55,7 +55,7 @@ func processAffected(p *Project, opts *processAffectedOptions) {
 	isAffected := p.isAffected()
 
 	if isAffected && p.CMDOptions.DryRun {
-		printer.Printf("%s %s %s\n", color.BlueString(p.Name), color.YellowString("=>"), p.Path)
+		printer.Printf("%s %s %s\n", color.BlueString(p.Name), color.YellowString("=>"), p.CleanPath)
 	}
 
 	if p.CMDOptions.DryRun || !isAffected {
@@ -91,7 +91,7 @@ func (p *Project) isAffected() bool {
 		return true
 	}
 
-	if p.CMDOptions.BinaryCheck && !utils.FileExist(path.Join(p.Path, p.Name)) {
+	if p.CMDOptions.BinaryCheck && !utils.FileExist(path.Join(p.CleanPath, p.Name)) {
 		return true
 	}
 

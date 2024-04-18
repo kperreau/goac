@@ -14,7 +14,7 @@ func TestPrintAffected_1AffectedAnd1Project(t *testing.T) {
 	// Initialize the List object
 	l := &List{
 		Projects: []*Project{
-			{Name: "Project1", Path: "/path/to/project1", CMDOptions: &Options{DryRun: true, Force: true}},
+			{Name: "Project1", CleanPath: "/path/to/project1", CMDOptions: &Options{DryRun: true, Force: true}},
 		},
 		Options: &Options{
 			DryRun: true,
@@ -41,7 +41,7 @@ func TestPrintAffected_0AffectedAnd1Project(t *testing.T) {
 	l := &List{
 		Projects: []*Project{
 			{
-				Name: "Project1", Path: "/path/to/project1",
+				Name: "Project1", CleanPath: "/path/to/project1",
 				CMDOptions: opts,
 				Metadata: &Metadata{
 					DependenciesHash: "a",

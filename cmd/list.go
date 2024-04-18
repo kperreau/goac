@@ -25,7 +25,6 @@ var listCmd = &cobra.Command{
 		}
 
 		listProject, err := project.NewProjectsList(&project.Options{
-			Path:           ".",
 			Target:         project.TargetNone,
 			MaxConcurrency: concurrency,
 			BinaryCheck:    binaryCheck,

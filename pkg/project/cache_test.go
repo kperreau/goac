@@ -13,9 +13,9 @@ import (
 func TestLoadCache_LoadsCacheDataFromFileIfExists(t *testing.T) {
 	// Initialize the class object
 	p := &Project{
-		Cache:    &Cache{},
-		HashPath: "hash",
-		Path:     "path",
+		Cache:     &Cache{},
+		HashPath:  "hash",
+		CleanPath: "path",
 	}
 
 	// Create a temporary directory
@@ -29,7 +29,7 @@ func TestLoadCache_LoadsCacheDataFromFileIfExists(t *testing.T) {
 	// Create a temporary cache file
 	cacheFilePath := fmt.Sprintf("%s%s.yaml", DefaultCachePath, p.HashPath)
 	cacheData := Cache{
-		Path: p.Path,
+		Path: p.CleanPath,
 		Target: map[Target]*Metadata{
 			TargetBuild: {
 				DependenciesHash: "hash",
@@ -53,9 +53,9 @@ func TestLoadCache_LoadsCacheDataFromFileIfExists(t *testing.T) {
 func TestLoadCache_InitializesDefaultCacheIfFileDoesNotExist(t *testing.T) {
 	// Initialize the class object
 	p := &Project{
-		Cache:    &Cache{},
-		HashPath: "hash",
-		Path:     "path",
+		Cache:     &Cache{},
+		HashPath:  "hash",
+		CleanPath: "path",
 	}
 
 	DefaultCachePath = "not-exist" // override DefaultCachePath
@@ -67,16 +67,16 @@ func TestLoadCache_InitializesDefaultCacheIfFileDoesNotExist(t *testing.T) {
 
 	// Assert that a default cache is initialized
 	assert.NoError(t, err)
-	assert.Equal(t, p.Path, p.Cache.Path)
+	assert.Equal(t, p.CleanPath, p.Cache.Path)
 	assert.Empty(t, p.Cache.Target)
 }
 
 func TestLoadCache_ReturnsErrorIfCacheFileCannotBeRead(t *testing.T) {
 	// Initialize the class object
 	p := &Project{
-		Cache:    &Cache{},
-		HashPath: "hash",
-		Path:     "path",
+		Cache:     &Cache{},
+		HashPath:  "hash",
+		CleanPath: "path",
 	}
 
 	// Create a temporary directory
@@ -102,9 +102,9 @@ func TestLoadCache_ReturnsErrorIfCacheFileCannotBeRead(t *testing.T) {
 func TestLoadCache_ReturnsErrorIfCacheFileCannotBeUnmarshaled(t *testing.T) {
 	// Initialize the class object
 	p := &Project{
-		Cache:    &Cache{},
-		HashPath: "hash",
-		Path:     "path",
+		Cache:     &Cache{},
+		HashPath:  "hash",
+		CleanPath: "path",
 	}
 
 	// Create a temporary directory

@@ -15,12 +15,12 @@ import (
 
 func TestLoadHashs_Success(t *testing.T) {
 	p := &Project{
-		Version:  "1.0",
-		Name:     "TestProject",
-		Path:     ".",
-		Target:   make(map[Target]*TargetConfig),
-		GoPath:   ".",
-		HashPath: ".",
+		Version:   "1.0",
+		Name:      "TestProject",
+		CleanPath: ".",
+		Target:    make(map[Target]*TargetConfig),
+		Path:      ".",
+		HashPath:  ".",
 		Module: &Module{
 			LocalDirs:    []string{"."},
 			ExternalDeps: []string{"dep1", "dep2"},

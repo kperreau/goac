@@ -14,8 +14,8 @@ import (
 func TestLoadGOModules_LoadsModuleData(t *testing.T) {
 	// Initialize the class object
 	p := &Project{
-		Name:   "test-project",
-		GoPath: "./../..",
+		Name: "test-project",
+		Path: "./../..",
 	}
 
 	mfile, _ := loadGOModFile("../..")

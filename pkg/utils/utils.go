@@ -12,7 +12,7 @@ func CleanPath(path string, filename string) string {
 }
 
 func AddCurrentDirPrefix(path string) string {
-	if !strings.HasPrefix(path, "./") && !strings.HasPrefix(path, "/") {
+	if path != "." && !strings.HasPrefix(path, "./") && !strings.HasPrefix(path, "/") {
 		return "./" + path
 	}
 	return path

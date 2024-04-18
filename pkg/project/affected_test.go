@@ -52,8 +52,8 @@ func TestIsAffected_BinaryCheckFalse_ReturnFalse(t *testing.T) {
 			DirHash:          "hash",
 			Date:             "date",
 		},
-		Path: ".",
-		Name: "goac",
+		CleanPath: ".",
+		Name:      "goac",
 		Cache: &Cache{
 			Target: map[Target]*Metadata{
 				TargetBuild: {
@@ -81,8 +81,8 @@ func TestIsAffected_BinaryCheckTrue_ReturnTrue(t *testing.T) {
 			DirHash:          "hash",
 			Date:             "date",
 		},
-		Path: ".",
-		Name: "goac",
+		CleanPath: ".",
+		Name:      "goac",
 		Cache: &Cache{
 			Target: map[Target]*Metadata{
 				TargetBuild: {
@@ -110,8 +110,8 @@ func TestIsAffected_DiffHash_ReturnTrue(t *testing.T) {
 			DirHash:          "new-hash",
 			Date:             "date",
 		},
-		Path: ".",
-		Name: "goac",
+		CleanPath: ".",
+		Name:      "goac",
 		Cache: &Cache{
 			Target: map[Target]*Metadata{
 				TargetBuild: {
@@ -176,8 +176,8 @@ func TestCountAffected_OneProject(t *testing.T) {
 					DirHash:          "hash",
 					Date:             "date",
 				},
-				Path: ".",
-				Name: "goac",
+				CleanPath: ".",
+				Name:      "goac",
 				Cache: &Cache{
 					Target: map[Target]*Metadata{
 						TargetBuild: {
@@ -213,8 +213,8 @@ func TestCountAffected_OneProjectOfTwo(t *testing.T) {
 					DirHash:          "hash",
 					Date:             "date",
 				},
-				Path: ".",
-				Name: "goac",
+				CleanPath: ".",
+				Name:      "goac",
 				Cache: &Cache{
 					Target: map[Target]*Metadata{
 						TargetBuild: {
@@ -234,8 +234,8 @@ func TestCountAffected_OneProjectOfTwo(t *testing.T) {
 					DirHash:          "hash",
 					Date:             "date",
 				},
-				Path: ".",
-				Name: "goac",
+				CleanPath: ".",
+				Name:      "goac",
 				Cache: &Cache{
 					Target: map[Target]*Metadata{
 						TargetBuild: {
@@ -270,8 +270,8 @@ func TestCountAffected_TwoProjects(t *testing.T) {
 					DirHash:          "new-hash",
 					Date:             "date",
 				},
-				Path: ".",
-				Name: "goac",
+				CleanPath: ".",
+				Name:      "goac",
 				Cache: &Cache{
 					Target: map[Target]*Metadata{
 						TargetBuild: {
@@ -291,8 +291,8 @@ func TestCountAffected_TwoProjects(t *testing.T) {
 					DirHash:          "new-hash",
 					Date:             "date",
 				},
-				Path: ".",
-				Name: "goac",
+				CleanPath: ".",
+				Name:      "goac",
 				Cache: &Cache{
 					Target: map[Target]*Metadata{
 						TargetBuild: {
@@ -346,8 +346,8 @@ func TestAffected_Prints1AffectedProjects(t *testing.T) {
 					DirHash:          "hash",
 					Date:             "date",
 				},
-				Path: ".",
-				Name: "goac",
+				CleanPath: ".",
+				Name:      "goac",
 				Cache: &Cache{
 					Target: map[Target]*Metadata{
 						TargetBuild: {
@@ -369,8 +369,8 @@ func TestAffected_Prints1AffectedProjects(t *testing.T) {
 					DirHash:          "hash",
 					Date:             "date",
 				},
-				Path: ".",
-				Name: "goac",
+				CleanPath: ".",
+				Name:      "goac",
 				Cache: &Cache{
 					Target: map[Target]*Metadata{
 						TargetBuild: {
@@ -413,8 +413,8 @@ func TestAffected_MaxConcurrencyZero(t *testing.T) {
 					DirHash:          "hash",
 					Date:             "date",
 				},
-				Path: ".",
-				Name: "goac",
+				CleanPath: ".",
+				Name:      "goac",
 				Cache: &Cache{
 					Target: map[Target]*Metadata{
 						TargetBuild: {
@@ -450,8 +450,8 @@ func TestProcessAffected_BuildAffectedProject(t *testing.T) {
 			DirHash:          "hash",
 			Date:             "date",
 		},
-		Path: ".",
-		Name: "goac",
+		CleanPath: ".",
+		Name:      "goac",
 		Cache: &Cache{
 			Target: map[Target]*Metadata{
 				TargetBuild: {

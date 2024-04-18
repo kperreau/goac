@@ -1,6 +1,7 @@
 package scan
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -48,12 +49,13 @@ func TestDirs_ReturnsErrorWhenDirectoryDoesNotExist(t *testing.T) {
 func TestSubDir_ValidDirectoryAndRule_ReturnsListOfFiles(t *testing.T) {
 	// Create a mock rule
 	rule := &Rule{
-		Excludes: []string{".*"},
+		Excludes: []string{".DS_Store"},
 		Includes: []string{"*.go"},
 	}
 
 	// Call the subDir function
 	files, err := subDir(".", rule)
+	fmt.Println("files", files)
 
 	// Assert that the function returns the expected result
 	assert.NoError(t, err)
@@ -63,7 +65,7 @@ func TestSubDir_ValidDirectoryAndRule_ReturnsListOfFiles(t *testing.T) {
 func TestSubDir_ValidDirectoryAndRuleExcludeTestFiles_ReturnsListOfFiles(t *testing.T) {
 	// Create a mock rule
 	rule := &Rule{
-		Excludes: []string{".*", "*_test.go"},
+		Excludes: []string{".DS_Store", "*_test.go"},
 		Includes: []string{"*.go"},
 	}
 
@@ -78,7 +80,7 @@ func TestSubDir_ValidDirectoryAndRuleExcludeTestFiles_ReturnsListOfFiles(t *test
 func TestSubDir_ValidDirectoryAndRuleOnlyGO_ReturnsListOfFiles(t *testing.T) {
 	// Create a mock rule
 	rule := &Rule{
-		Excludes: []string{".*", "*_test.go"},
+		Excludes: []string{".DS_Store", "*_test.go"},
 		Includes: []string{"*.go"},
 	}
 

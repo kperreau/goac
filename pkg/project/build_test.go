@@ -2,7 +2,6 @@ package project
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -15,8 +14,8 @@ import (
 func TestBuild_WithDefaultParameters(t *testing.T) {
 	tmp, _ := os.MkdirTemp("", "test-build")
 	p := &Project{
-		Name:   "test-project",
-		GoPath: tmp,
+		Name: "test-project",
+		Path: tmp,
 		Target: map[Target]*TargetConfig{
 			TargetBuild: {
 				Exec: &Exec{
@@ -129,14 +128,65 @@ func redirectBuildStdout(f func() error) (*bytes.Buffer, error) {
 	return &buf, err
 }
 
-func TestSetEnv_BuildName(t *testing.T) {
-	p := &Project{Name: "test-project", GoPath: "."}
+func TestSetEnv_SetEnvironmentVariables(t *testing.T) {
+	p := &Project{
+		Name: "goac",
+		Path: ".",
+		Target: map[Target]*TargetConfig{
+			TargetBuild: {
+				Envs: []Env{
+					{Key: "ENV_TEST", Value: "hello"},
+					{Key: "BUILD_NAME", Value: "goac"},
+					{Key: "PROJECT_PATH", Value: "."},
+				},
+			},
+		},
+		CMDOptions: &Options{
+			Target: TargetBuild,
+		},
+	}
 	cmd := &exec.Cmd{}
 	setEnv(p, cmd)
+
 	expectedEnv := append(
 		os.Environ(),
-		fmt.Sprintf("BUILD_NAME=%s", p.Name),
-		fmt.Sprintf("PROJECT_PATH=%s", p.GoPath),
+		"ENV_TEST=hello",
+		"BUILD_NAME=goac",
+		"PROJECT_PATH=.",
 	)
 	assert.Equal(t, expectedEnv, cmd.Env)
+}
+
+func TestReplaceAllVariables_ReplaceVariables(t *testing.T) {
+	p := &Project{
+		Name: "goac",
+		Path: ".",
+		Target: map[Target]*TargetConfig{
+			TargetBuild: {
+				Envs: []Env{
+					{Key: "PROJECT_NAME", Value: "{{project-name}}"},
+					{Key: "PROJECT_PATH", Value: "{{project-path}}"},
+				},
+				Exec: &Exec{
+					CMD:    "echo",
+					Params: []string{"{{project-name}}", "{{project-path}}"},
+				},
+			},
+		},
+		CMDOptions: &Options{
+			Target: TargetBuild,
+		},
+	}
+
+	replaceAllVariables(p)
+
+	expectedEnvName := p.Name
+	expectedEnvPath := p.Path
+	assert.Equal(t, expectedEnvName, p.Target[TargetBuild].Envs[0].Value)
+	assert.Equal(t, expectedEnvPath, p.Target[TargetBuild].Envs[1].Value)
+
+	expectedParamName := p.Name
+	expectedParamPath := p.Path
+	assert.Equal(t, expectedParamName, p.Target[TargetBuild].Exec.Params[0])
+	assert.Equal(t, expectedParamPath, p.Target[TargetBuild].Exec.Params[1])
 }

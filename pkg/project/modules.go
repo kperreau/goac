@@ -31,7 +31,7 @@ type toolData struct {
 }
 
 func (p *Project) LoadGOModules(gomod *modfile.File) error {
-	cmd := exec.Command("go", "list", "-json", p.GoPath)
+	cmd := exec.Command("go", "list", "-json", p.Path)
 	output, err := cmd.Output()
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func (p *Project) LoadGOModules(gomod *modfile.File) error {
 		return err
 	}
 
-	localDir, extDeps := cleanDeps(&rawData, p.GoPath)
+	localDir, extDeps := cleanDeps(&rawData, p.Path)
 
 	p.Module = &Module{
 		LocalDirs:      localDir,

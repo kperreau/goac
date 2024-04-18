@@ -14,8 +14,8 @@ func TestList_PrintsNumberOfProjects(t *testing.T) {
 	// Initialize the List object
 	l := &List{
 		Projects: []*Project{
-			{Name: "Project1", Path: "/path/to/project1"},
-			{Name: "Project2", Path: "/path/to/project2"},
+			{Name: "Project1", CleanPath: "/path/to/project1"},
+			{Name: "Project2", CleanPath: "/path/to/project2"},
 		},
 		Options: &Options{},
 	}
@@ -48,7 +48,7 @@ func TestList_HandlesProjectsWithEmptyName(t *testing.T) {
 	// Initialize the List object with a project with empty name
 	l := &List{
 		Projects: []*Project{
-			{Name: "", Path: "."},
+			{Name: "", CleanPath: "."},
 		},
 		Options: &Options{},
 	}
