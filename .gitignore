@@ -19,3 +19,8 @@
 
 # Go workspace file
 go.work
+
+.goac
+goac
+.idea
+.DS_Store
