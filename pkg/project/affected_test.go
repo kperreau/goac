@@ -129,12 +129,12 @@ func TestIsAffected_DiffHash_ReturnTrue(t *testing.T) {
 }
 
 func TestStringToTarget_Build(t *testing.T) {
-	result := StringToTarget("build")
+	result := StringToTarget(TargetBuild.String())
 	assert.Equal(t, TargetBuild, result)
 }
 
 func TestStringToTarget_BuildImage(t *testing.T) {
-	result := StringToTarget("build-image")
+	result := StringToTarget(TargetBuildImage.String())
 	assert.Equal(t, TargetBuildImage, result)
 }
 
