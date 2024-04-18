@@ -1,0 +1,18 @@
+version: "1.0"
+name: goac
+target:
+  build:
+    exec:
+      cmd: go
+      params:
+        - build
+        - -ldflags=-s -w
+        - -o
+        - '{{project-path}}/{{project-name}}'
+        - '{{project-path}}'
+  build-image:
+    envs:
+      - key: PROJECT_PATH
+        value: '{{project-path}}'
+    exec:
+      cmd: ./_scripts/build-image.sh

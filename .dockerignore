@@ -1,0 +1,17 @@
+.gitignore
+.dockerignore
+Dockerfile
+.github/
+.git/
+*.log
+.goac/
+.goacproject.yaml
+.semver.yaml
+coverage.out
+goac
+*_test.go
+README.md
+LICENSE
+Makefile
+.DS_Store
+.idea
