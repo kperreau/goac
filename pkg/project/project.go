@@ -70,6 +70,8 @@ type Options struct {
 	PrintStdout    bool
 }
 
+var RootPath = "."
+
 func NewProjectsList(opt *Options) (IList, error) {
 	projects, err := getProjects(opt)
 	if err != nil {
@@ -136,13 +138,13 @@ type processProjectOptions struct {
 }
 
 func getProjects(opt *Options) (projects []*Project, err error) {
-	projectsFiles, err := find(".", configFileName)
+	projectsFiles, err := find(RootPath, configFileName)
 	if err != nil {
 		return nil, err
 	}
 
 	// preload go mod file dependencies
-	gomod, err := loadGOModFile(".")
+	gomod, err := loadGOModFile(RootPath)
 	if err != nil {
 		return nil, err
 	}
