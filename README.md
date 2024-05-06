@@ -71,6 +71,7 @@ Available Commands:
   discover    List discovered projects
   help        Help about any command
   list        List projects
+  version     Get goac version
 
 Flags:
   -h, --help   help for goac
