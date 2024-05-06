@@ -19,12 +19,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
+      - name: Setup Go
+        uses: kperreau/setup-go@v5
         with:
           go-version: "1.22"
-          cache: false
           check-latest: true
+          cache-key-prefix: test
 
       - name: Verify dependencies
         run: |
@@ -32,9 +32,9 @@ jobs:
           git diff --exit-code
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v4
+        uses: golangci/golangci-lint-action@v5
         with:
-          version: "v1.55.2"
+          version: latest
           args: --timeout=10m
 
       - name: Vet
