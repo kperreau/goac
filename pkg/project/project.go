@@ -138,6 +138,10 @@ type processProjectOptions struct {
 }
 
 func getProjects(opt *Options) (projects []*Project, err error) {
+	if opt.MaxConcurrency < 1 {
+		return nil, fmt.Errorf("max concurrency can't be less than 1")
+	}
+
 	projectsFiles, err := find(RootPath, configFileName)
 	if err != nil {
 		return nil, err
@@ -150,7 +154,7 @@ func getProjects(opt *Options) (projects []*Project, err error) {
 	}
 
 	// init process options
-	sem := make(chan bool, opt.MaxConcurrency+1)
+	sem := make(chan bool, opt.MaxConcurrency)
 	projectsCh := make(chan *Project)
 	errorsCh := make(chan error)
 	wg := sync.WaitGroup{}

@@ -397,7 +397,7 @@ func TestAffected_Prints1AffectedProjects(t *testing.T) {
 	assert.Equal(t, expectedOutput, output.String())
 }
 
-func TestAffected_MaxConcurrencyZero(t *testing.T) {
+func TestAffected_MaxConcurrencyOne(t *testing.T) {
 	// Initialize the List object
 	l := &List{
 		Projects: []*Project{
@@ -427,7 +427,7 @@ func TestAffected_MaxConcurrencyZero(t *testing.T) {
 			},
 		},
 		Options: &Options{
-			MaxConcurrency: 0,
+			MaxConcurrency: 1,
 			DryRun:         true,
 		},
 	}

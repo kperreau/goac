@@ -28,7 +28,7 @@ func (l *List) Affected() error {
 	l.printAffected()
 
 	// init process options
-	sem := make(chan bool, l.Options.MaxConcurrency+1)
+	sem := make(chan bool, l.Options.MaxConcurrency)
 	wg := sync.WaitGroup{}
 	pOpts := &processAffectedOptions{
 		wg:  &wg,
