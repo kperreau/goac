@@ -3,10 +3,10 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"os"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 )
 
 // versionCmd represents the project command
