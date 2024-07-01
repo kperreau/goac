@@ -3,9 +3,11 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"os"
 	"slices"
 	"strings"
 
+	"github.com/kperreau/goac/pkg/printer"
 	"github.com/kperreau/goac/pkg/project"
 	"github.com/spf13/cobra"
 )
@@ -39,7 +41,8 @@ var affectedCmd = &cobra.Command{
 				return err
 			}
 			if err := projectsList.Affected(); err != nil {
-				return err
+				printer.Errorf("%s\n", err)
+				os.Exit(1)
 			}
 			return nil
 		}

@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"sync"
 	"testing"
 
 	"github.com/fatih/color"
@@ -463,25 +462,14 @@ func TestProcessAffected_BuildAffectedProject(t *testing.T) {
 		},
 	}
 
-	// Create a processAffectedOptions with a wait group and semaphore
-	opts := &processAffectedOptions{
-		wg:  &sync.WaitGroup{},
-		sem: make(chan bool, 1),
-	}
-
-	// Add a wait group counter
-	opts.wg.Add(1)
-
-	// Acquire the semaphore
-	opts.sem <- true
-
 	// Redirect stdout to a buffer
 	old := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
 	// Call the processAffected function
-	processAffected(p, opts)
+	err := processAffected(p)
+	assert.NoError(t, err)
 
 	// Restore stdout
 	if err := w.Close(); err != nil {

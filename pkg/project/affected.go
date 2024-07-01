@@ -1,12 +1,13 @@
 package project
 
 import (
+	"fmt"
 	"path"
-	"sync"
 
 	"github.com/fatih/color"
 	"github.com/kperreau/goac/pkg/printer"
 	"github.com/kperreau/goac/pkg/utils"
+	"golang.org/x/sync/errgroup"
 )
 
 type Target string
@@ -19,39 +20,25 @@ const (
 
 func (t Target) String() string { return string(t) }
 
-type processAffectedOptions struct {
-	wg  *sync.WaitGroup
-	sem chan bool
-}
-
 func (l *List) Affected() error {
 	l.printAffected()
 
-	// init process options
-	sem := make(chan bool, l.Options.MaxConcurrency)
-	wg := sync.WaitGroup{}
-	pOpts := &processAffectedOptions{
-		wg:  &wg,
-		sem: sem,
-	}
-
+	eg := errgroup.Group{}
+	eg.SetLimit(l.Options.MaxConcurrency)
 	for _, p := range l.Projects {
-		sem <- true // acquire
-		wg.Add(1)
-		go processAffected(p, pOpts)
+		eg.Go(func() error {
+			return processAffected(p)
+		})
 	}
 
-	wg.Wait()
+	if err := eg.Wait(); err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func processAffected(p *Project, opts *processAffectedOptions) {
-	defer opts.wg.Done()
-	defer func() {
-		<-opts.sem // release
-	}()
-
+func processAffected(p *Project) error {
 	isAffected := p.isAffected()
 
 	if isAffected && p.CMDOptions.DryRun {
@@ -59,18 +46,18 @@ func processAffected(p *Project, opts *processAffectedOptions) {
 	}
 
 	if p.CMDOptions.DryRun || !isAffected {
-		return
+		return nil
 	}
 
 	if err := p.build(); err != nil {
-		printer.Errorf("error building: %s\n", err.Error())
-		return
+		return fmt.Errorf("error building: %s", err.Error())
 	}
 
 	if err := p.writeCache(); err != nil {
-		printer.Errorf("%v\n", err)
-		return
+		return err
 	}
+
+	return nil
 }
 
 func (l *List) countAffected() (n int) {
